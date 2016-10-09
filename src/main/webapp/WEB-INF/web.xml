@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>demo</display-name>
+
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+
+	<!-- Druid 监控配置 start -->
+	<servlet>
+		<servlet-name>druidStatViewServlet</servlet-name>
+		<servlet-class>com.example.servlet.DruidStatViewServlet</servlet-class>
+		<init-param>
+			<param-name>allow</param-name>
+			<param-value>192.168.12.229,127.0.0.1</param-value><!-- IP白名单 (没有配置或者为空，则允许所有访问) -->
+		</init-param>
+		<init-param>
+			<param-name>deny</param-name>
+			<param-value>192.168.12.228</param-value><!-- IP黑名单 (存在共同时，deny优先于allow) -->
+		</init-param>
+		<init-param>
+			<param-name>loginUsername</param-name>
+			<param-value>admin</param-value>
+		</init-param>
+		<init-param>
+			<param-name>loginPassword</param-name>
+			<param-value>admin</param-value>
+		</init-param>
+		<init-param>
+			<param-name>resetEnable</param-name>
+			<param-value>false</param-value><!-- 禁用HTML页面上的“Reset All”功能 -->
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>druidStatViewServlet</servlet-name>
+		<url-pattern>/druid/*</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>druidStatFilter</filter-name>
+		<filter-class>com.example.filter.DruidStatFilter</filter-class>
+		<init-param>
+			<param-name>exclusions</param-name>
+			<param-value>*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*</param-value><!-- 
+				忽略资源 -->
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>druidStatFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- Druid 监控配置 end -->
+
+	<!-- 请求参数特殊字符过滤 start -->
+	<filter>
+		<filter-name>IllegalCharacterFilter</filter-name>
+		<filter-class>com.example.filter.IllegalCharacterFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>IllegalCharacterFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 请求参数特殊字符过滤 end -->
+
+	<!-- Character Encoding filter -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- session超时定义,单位为分钟 -->
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+</web-app>
